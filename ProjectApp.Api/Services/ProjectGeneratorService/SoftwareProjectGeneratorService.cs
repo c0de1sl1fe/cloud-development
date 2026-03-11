@@ -1,43 +1,66 @@
-using Bogus;
 using ProjectApp.Domain.Entities;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 
 namespace ProjectApp.Api.Services.ProjectGeneratorService;
 
+/// <summary>
+/// Сервис получения программного проекта: сначала ищет в кэше, при промахе — генерирует новый и сохраняет
+/// </summary>
 public class SoftwareProjectGeneratorService(
     IDistributedCache cache,
+    ProjectGenerator generator,
     IConfiguration configuration,
-    ILogger<SoftwareProjectGeneratorService> logger)
+    ILogger<SoftwareProjectGeneratorService> logger) : ISoftwareProjectGeneratorService
 {
     private readonly int _expirationMinutes = configuration.GetValue("CacheSettings:ExpirationMinutes", 10);
 
+    /// <summary>
+    /// Возвращает программный проект по идентификатору.
+    /// Если проект найден в кэше — возвращается из него; иначе генерируется, сохраняется в кэш и возвращается.
+    /// </summary>
+    /// <param name="id">Идентификатор проекта</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <returns>Программный проект</returns>
     public async Task<SoftwareProject> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Attempting to retrieve software project {Id} from cache", id);
+
+        var cacheKey = $"software-project-{id}";
+
+        // Получаем проект из кэша
+        SoftwareProject? project = null;
         try
         {
-            var cacheKey = $"software-project-{id}";
-
-            logger.LogInformation("Attempting to retrieve software project {Id} from cache", id);
-
             var cachedData = await cache.GetStringAsync(cacheKey, cancellationToken);
 
             if (!string.IsNullOrEmpty(cachedData))
             {
-                var deserializedProject = JsonSerializer.Deserialize<SoftwareProject>(cachedData);
+                project = JsonSerializer.Deserialize<SoftwareProject>(cachedData);
 
-                if (deserializedProject != null)
+                if (project != null)
                 {
                     logger.LogInformation("Software project {Id} found in cache", id);
-                    return deserializedProject;
+                    return project;
                 }
 
                 logger.LogWarning("Project {Id} was found in cache but could not be deserialized. Generating a new one", id);
             }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to retrieve project {Id} from cache (error ignored)", id);
+        }
 
-            logger.LogInformation("Project {Id} not found in cache, generating a new one", id);
+        // Если в кэше нет или ошибка — генерируем новый проект
+        logger.LogInformation("Project {Id} not found in cache or cache unavailable, generating a new one", id);
+        project = generator.Generate();
+        project.Id = id;
 
-            var project = GenerateProject(id);
+        // Попытка сохранить в кэш
+        try
+        {
+            logger.LogInformation("Saving project {Id} to cache", id);
 
             var cacheOptions = new DistributedCacheEntryOptions
             {
@@ -57,61 +80,12 @@ public class SoftwareProjectGeneratorService(
                 project.Customer,
                 project.Budget,
                 project.CompletionPercentage);
-
-            return project;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while retrieving/generating project {Id}", id);
-            throw;
+            logger.LogWarning(ex, "Failed to save project {Id} to cache (error ignored)", id);
         }
-    }
 
-    /// <summary>
-    /// Генерация программного проекта с указанным ID
-    /// </summary>
-    private static SoftwareProject GenerateProject(int id)
-    {
-        var faker = new Faker<SoftwareProject>("ru")
-            .RuleFor(p => p.Id, _ => id)
-            .RuleFor(p => p.ProjectName, f =>
-                $"{f.Commerce.ProductName()} {f.Hacker.Noun()} {f.Finance.AccountName()} {f.Lorem.Word()}")
-            .RuleFor(p => p.Customer, f => f.Company.CompanyName())
-            .RuleFor(p => p.ProjectManager, f =>
-                $"{f.Name.LastName()} {f.Name.FirstName()} {f.Name.FirstName()}")
-            .RuleFor(p => p.StartDate, f => f.Date.PastDateOnly(3))
-            .RuleFor(p => p.PlannedEndDate, (f, p) => p.StartDate.AddDays(f.Random.Int(30, 730)))
-            .RuleFor(p => p.Budget, f => Math.Round(f.Finance.Amount(500000, 50000000), 2))
-            .RuleFor(p => p.ActualEndDate, (f, p) =>
-            {
-                var isCompleted = f.Random.Bool(0.4f);
-                if (!isCompleted) return null;
-
-                var startDateTime = p.StartDate.ToDateTime(TimeOnly.MinValue);
-                var minDate = startDateTime.AddDays(1);
-                var maxDate = DateTime.Now;
-
-                // Защита от случая, когда проект начался сегодня
-                if (minDate > maxDate)
-                {
-                    return DateOnly.FromDateTime(minDate);
-                }
-
-                var endDate = f.Date.Between(minDate, maxDate);
-                return DateOnly.FromDateTime(endDate);
-            })
-            .RuleFor(p => p.CompletionPercentage, (f, p) => p.ActualEndDate.HasValue ? 100 : f.Random.Int(0, 99))
-            .RuleFor(p => p.ActualCost, (f, p) =>
-            {
-                // Затраты пропорциональны бюджету и проценту выполнения
-                // Минимум 10% от пропорции, максимум 120% от пропорции
-                var minFactor = Math.Max(0.1m, p.CompletionPercentage / 100m * 0.8m);
-                var maxFactor = Math.Min(1.2m, p.CompletionPercentage / 100m * 1.2m);
-
-                var costFactor = f.Random.Decimal(minFactor, maxFactor);
-                return Math.Round(p.Budget * costFactor, 2);
-            });
-
-        return faker.Generate();
+        return project;
     }
 }

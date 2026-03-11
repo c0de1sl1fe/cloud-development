@@ -9,15 +9,16 @@ builder.AddRedisDistributedCache("cache");
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazorWasm", policy =>
+    options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy.WithOrigins("http://localhost:5127")
+              .WithMethods("GET")
+              .WithHeaders("Content-Type");
     });
 });
 
-builder.Services.AddScoped<SoftwareProjectGeneratorService>();
+builder.Services.AddScoped<ProjectGenerator>();
+builder.Services.AddScoped<ISoftwareProjectGeneratorService, SoftwareProjectGeneratorService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -51,7 +52,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowBlazorWasm");
+app.UseCors();
 app.MapControllers();
 app.MapDefaultEndpoints();
 

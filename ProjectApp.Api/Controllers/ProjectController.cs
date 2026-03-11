@@ -6,7 +6,7 @@ namespace ProjectApp.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProjectController(SoftwareProjectGeneratorService generatorService, ILogger<ProjectController> logger) : ControllerBase
+public class ProjectController(ISoftwareProjectGeneratorService generatorService, ILogger<ProjectController> logger) : ControllerBase
 {
     /// <summary>
     /// Получить программный проект по ID, если не найден в кэше — сгенерировать новый
