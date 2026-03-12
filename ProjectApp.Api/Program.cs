@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddScoped<ProjectGenerator>();
+builder.Services.AddSingleton<ProjectGenerator>();
 builder.Services.AddScoped<ISoftwareProjectGeneratorService, SoftwareProjectGeneratorService>();
 
 builder.Services.AddControllers();
