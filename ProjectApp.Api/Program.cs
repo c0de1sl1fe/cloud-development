@@ -7,16 +7,6 @@ builder.AddServiceDefaults();
 
 builder.AddRedisDistributedCache("cache");
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.WithOrigins("http://localhost:5127")
-              .WithMethods("GET")
-              .WithHeaders("Content-Type");
-    });
-});
-
 builder.Services.AddSingleton<ProjectGenerator>();
 builder.Services.AddScoped<ISoftwareProjectGeneratorService, SoftwareProjectGeneratorService>();
 
@@ -52,7 +42,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors();
 app.MapControllers();
 app.MapDefaultEndpoints();
 

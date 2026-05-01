@@ -1,6 +1,5 @@
 using ProjectApp.ApiGateway.LoadBalancing;
 using ProjectApp.ServiceDefaults;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -55,9 +54,9 @@ builder.Services
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowClient", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:5127", "https://localhost:7282")
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
@@ -65,10 +64,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseCors("AllowClient");
 app.MapDefaultEndpoints();
-app.UseHealthChecks("/health");
-app.UseHealthChecks("/alive", new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") });
-app.UseCors("AllowAll");
 await app.UseOcelot();
 
 app.Run();

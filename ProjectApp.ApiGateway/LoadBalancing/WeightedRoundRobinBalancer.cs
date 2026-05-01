@@ -10,11 +10,11 @@ namespace ProjectApp.ApiGateway.LoadBalancing;
 /// </summary>
 public class WeightedRoundRobinBalancer(Func<Task<List<Service>>> servicesProvider, Dictionary<string, int> hostPortWeights) : ILoadBalancer
 {
-    private static int _currentIndex = -1;
-    private static int _remainingRequests = 0;
-    private static readonly object _lock = new();
+    private int _currentIndex = -1;
+    private int _remainingRequests = 0;
+    private readonly object _lock = new();
 
-    public string Type => "WeightedRoundRobin";
+    public string Type => nameof(WeightedRoundRobinBalancer);
 
     public async Task<Response<ServiceHostAndPort>> LeaseAsync(HttpContext httpContext)
     {
@@ -30,7 +30,7 @@ public class WeightedRoundRobinBalancer(Func<Task<List<Service>>> servicesProvid
             .Where(s =>
             {
                 var hostPort = $"{s.HostAndPort.DownstreamHost}:{s.HostAndPort.DownstreamPort}";
-                var weight = hostPortWeights.TryGetValue(hostPort, out var w) ? w : 1;
+                var weight = hostPortWeights.GetValueOrDefault(hostPort, 1);
                 return weight > 0;
             })
             .ToList();
@@ -52,7 +52,7 @@ public class WeightedRoundRobinBalancer(Func<Task<List<Service>>> servicesProvid
                 var service = availableServices[_currentIndex];
                 var hostPort = $"{service.HostAndPort.DownstreamHost}:{service.HostAndPort.DownstreamPort}";
 
-                var weight = hostPortWeights.TryGetValue(hostPort, out var w) ? w : 1;
+                var weight = hostPortWeights.GetValueOrDefault(hostPort, 1);
                 _remainingRequests = weight;
             }
 
