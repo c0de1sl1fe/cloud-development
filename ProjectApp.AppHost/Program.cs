@@ -33,7 +33,7 @@ for (var i = 0; i < 3; i++)
         })
         .WaitFor(redis);
 
-    gateway = gateway.WithReference(api).WaitFor(api);
+    gateway.WithReference(api).WaitFor(api);
 }
 
 builder.AddProject<Projects.Client_Wasm>("client")
