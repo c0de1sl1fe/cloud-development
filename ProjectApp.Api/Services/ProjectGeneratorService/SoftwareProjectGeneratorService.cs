@@ -1,3 +1,4 @@
+using ProjectApp.Api.Messaging;
 using ProjectApp.Domain.Entities;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
@@ -10,6 +11,7 @@ namespace ProjectApp.Api.Services.ProjectGeneratorService;
 public class SoftwareProjectGeneratorService(
     IDistributedCache cache,
     ProjectGenerator generator,
+    IProjectPublisherService producer,
     IConfiguration configuration,
     ILogger<SoftwareProjectGeneratorService> logger) : ISoftwareProjectGeneratorService
 {
@@ -56,6 +58,8 @@ public class SoftwareProjectGeneratorService(
         logger.LogInformation("Project {Id} not found in cache or cache unavailable, generating a new one", id);
         project = generator.Generate();
         project.Id = id;
+
+        await producer.SendMessage(project);
 
         // Попытка сохранить в кэш
         try

@@ -14,15 +14,19 @@ public class ProjectGenerator
     {
         _faker = new Faker<SoftwareProject>("ru")
             .RuleFor(p => p.Id, f => f.IndexFaker + 1)
-            .RuleFor(p => p.ProjectName, f =>
+            .RuleFor(p => p.ProjectName, f => string.Join(" ",
                 f.PickRandom(
-                    f.Commerce.ProductName() + " " + f.Hacker.Abbreviation(),
-                    "Project " + f.Hacker.Noun(),
-                    f.Finance.AccountName() + " System",
-                    f.Lorem.Word() + "-" + f.Lorem.Word()
-                ))
+                    f.Commerce.ProductName(),
+                    f.Hacker.Phrase(),
+                    f.Finance.AccountName(),
+                    f.Lorem.Word()),
+                f.PickRandom(
+                    f.Commerce.Department(),
+                    f.Hacker.Verb(),
+                    f.Finance.TransactionType(),
+                    f.Lorem.Word())))
             .RuleFor(p => p.Customer, f => f.Company.CompanyName())
-            .RuleFor(p => p.ProjectManager, f => f.Name.FullName())
+            .RuleFor(p => p.ProjectManager, f => $"{f.Name.LastName()} {f.Name.FirstName()} {f.Name.FirstName()}")
             .RuleFor(p => p.StartDate, f => f.Date.PastDateOnly(3))
             .RuleFor(p => p.PlannedEndDate, (f, p) => p.StartDate.AddDays(f.Random.Int(30, 730)))
             .RuleFor(p => p.Budget, f => Math.Round(f.Finance.Amount(500000, 50000000), 2))
@@ -46,11 +50,12 @@ public class ProjectGenerator
                 var endDate = f.Date.Between(minDate, maxDate);
                 return DateOnly.FromDateTime(endDate);
             })
-            .RuleFor(p => p.CompletionPercentage, (f, p) => p.ActualEndDate.HasValue ? 100 : f.Random.Int(0, 99))
+            .RuleFor(p => p.CompletionPercentage, (f, p) => p.ActualEndDate.HasValue ? 100 : f.Random.Int(0, 100))
             .RuleFor(p => p.ActualCost, (f, p) =>
             {
-                var minFactor = Math.Max(0.1m, p.CompletionPercentage / 100m * 0.8m);
-                var maxFactor = Math.Min(1.2m, p.CompletionPercentage / 100m * 1.2m);
+                var completionFactor = p.CompletionPercentage / 100m;
+                var minFactor = Math.Max(0m, completionFactor * 0.8m);
+                var maxFactor = Math.Max(minFactor, Math.Min(1.2m, completionFactor * 1.2m + 0.05m));
 
                 var costFactor = f.Random.Decimal(minFactor, maxFactor);
                 return Math.Round(p.Budget * costFactor, 2);

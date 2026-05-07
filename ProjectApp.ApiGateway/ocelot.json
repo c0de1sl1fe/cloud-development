@@ -11,10 +11,6 @@
         {
           "Host": "localhost",
           "Port": 7174
-        },
-        {
-          "Host": "localhost",
-          "Port": 7175
         }
       ],
       "UpstreamPathTemplate": "/api/project",

@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectApp.AppHost", "Proje
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectApp.ApiGateway", "ProjectApp.ApiGateway\ProjectApp.ApiGateway.csproj", "{C7D4CA8B-53EA-9676-D96D-BE2F0CB11055}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.FileStorage", "Service.FileStorage\Service.FileStorage.csproj", "{5BFA3D71-4E8F-4E6F-A6F9-3E8D8B3A4E11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectApp.AppHost.Test", "ProjectApp.AppHost.Test\ProjectApp.AppHost.Test.csproj", "{8F1C1E77-CC67-4B2D-8D4D-2E6A2E0F9A22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +48,14 @@ Global
 		{C7D4CA8B-53EA-9676-D96D-BE2F0CB11055}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7D4CA8B-53EA-9676-D96D-BE2F0CB11055}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7D4CA8B-53EA-9676-D96D-BE2F0CB11055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BFA3D71-4E8F-4E6F-A6F9-3E8D8B3A4E11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BFA3D71-4E8F-4E6F-A6F9-3E8D8B3A4E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BFA3D71-4E8F-4E6F-A6F9-3E8D8B3A4E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFA3D71-4E8F-4E6F-A6F9-3E8D8B3A4E11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F1C1E77-CC67-4B2D-8D4D-2E6A2E0F9A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F1C1E77-CC67-4B2D-8D4D-2E6A2E0F9A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F1C1E77-CC67-4B2D-8D4D-2E6A2E0F9A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F1C1E77-CC67-4B2D-8D4D-2E6A2E0F9A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

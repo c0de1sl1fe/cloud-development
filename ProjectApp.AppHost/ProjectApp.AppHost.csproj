@@ -14,12 +14,21 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.2" />
     <PackageReference Include="Aspire.Hosting.Redis" Version="9.5.2" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Minio" Version="9.9.0" />
+    <PackageReference Include="LocalStack.Aspire.Hosting" Version="9.5.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Client.Wasm\Client.Wasm.csproj" />
     <ProjectReference Include="..\ProjectApp.ApiGateway\ProjectApp.ApiGateway.csproj" />
     <ProjectReference Include="..\ProjectApp.Api\ProjectApp.Api.csproj" />
+    <ProjectReference Include="..\Service.FileStorage\Service.FileStorage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="CloudFormation\project-template.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
