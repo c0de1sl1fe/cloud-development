@@ -44,6 +44,7 @@ public class FileStorageController(IFileStorageService storageService, ILogger<F
     /// <returns>JSON-представление файла</returns>
     [HttpGet("{key}")]
     [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
     [ProducesResponseType(500)]
     public async Task<ActionResult<JsonNode>> GetFile(string key)
     {
@@ -57,7 +58,7 @@ public class FileStorageController(IFileStorageService storageService, ILogger<F
         catch (Exception ex)
         {
             logger.LogError(ex, "Ошибка при выполнении метода {method} контроллера {controller}", nameof(GetFile), nameof(FileStorageController));
-            return BadRequest(ex.Message);
+            return NotFound(ex.Message);
         }
     }
 }

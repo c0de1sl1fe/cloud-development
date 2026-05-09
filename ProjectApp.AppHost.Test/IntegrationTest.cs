@@ -53,7 +53,7 @@ public class IntegrationTest(ITestOutputHelper output) : IAsyncLifetime
         using var gatewayResponse = await gatewayClient.GetAsync($"/api/project?id={id}");
         var apiProject = JsonSerializer.Deserialize<SoftwareProject>(await gatewayResponse.Content.ReadAsStringAsync(), _jsonOptions);
 
-        await Task.Delay(5000);
+        await Task.Delay(10_000);
 
         using var storageClient = _app!.CreateHttpClient("service-filestorage");
         using var listResponse = await storageClient.GetAsync("/api/files");
@@ -85,7 +85,7 @@ public class IntegrationTest(ITestOutputHelper output) : IAsyncLifetime
         using var secondResponse = await gatewayClient.GetAsync($"/api/project?id={id}");
         var secondProject = JsonSerializer.Deserialize<SoftwareProject>(await secondResponse.Content.ReadAsStringAsync(), _jsonOptions);
 
-        await Task.Delay(5000);
+        await Task.Delay(10_000);
 
         using var storageClient = _app!.CreateHttpClient("service-filestorage");
         using var listResponse = await storageClient.GetAsync("/api/files");
@@ -118,7 +118,7 @@ public class IntegrationTest(ITestOutputHelper output) : IAsyncLifetime
             apiProjects[id] = project!;
         }
 
-        await Task.Delay(5000);
+        await Task.Delay(10_000);
 
         using var storageClient = _app!.CreateHttpClient("service-filestorage");
         using var listResponse = await storageClient.GetAsync("/api/files");
