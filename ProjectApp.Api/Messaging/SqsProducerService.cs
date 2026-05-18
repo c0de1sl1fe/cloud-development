@@ -11,7 +11,7 @@ namespace ProjectApp.Api.Messaging;
 /// <param name="client">Клиент SQS</param>
 /// <param name="configuration">Конфигурация</param>
 /// <param name="logger">Логгер</param>
-public class SqsProducerService(IAmazonSQS client, IConfiguration configuration, ILogger<SqsProducerService> logger) : IProjectPublisherService
+public class SqsProducerService(IAmazonSQS client, IConfiguration configuration, ILogger<SqsProducerService> logger) : IProjectProducerService
 {
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {

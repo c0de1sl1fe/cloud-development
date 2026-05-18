@@ -14,7 +14,7 @@ builder.Services.AddAwsService<IAmazonSQS>();
 
 builder.Services.AddSingleton<ProjectGenerator>();
 builder.Services.AddScoped<ISoftwareProjectGeneratorService, SoftwareProjectGeneratorService>();
-builder.Services.AddScoped<IProjectPublisherService, SqsProducerService>();
+builder.Services.AddScoped<IProjectProducerService, SqsProducerService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

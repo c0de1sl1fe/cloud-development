@@ -72,7 +72,7 @@ public class IntegrationTest(ITestOutputHelper output) : IAsyncLifetime
 
     /// <summary>
     /// Проверяет, что повторный запрос проекта с тем же id обслуживается из кэша
-    /// и не приводит к повторной публикации в брокер: в бакете остаётся ровно один файл.
+    /// и не приводит к повторной публикации в брокер: файловый сервис получает ровно одно сообщение.
     /// </summary>
     [Fact]
     public async Task CacheHitDoesNotDuplicateStorageObjectTest()
@@ -88,15 +88,13 @@ public class IntegrationTest(ITestOutputHelper output) : IAsyncLifetime
         await Task.Delay(10_000);
 
         using var storageClient = _app!.CreateHttpClient("service-filestorage");
-        using var listResponse = await storageClient.GetAsync("/api/files");
-        var fileList = JsonSerializer.Deserialize<List<string>>(await listResponse.Content.ReadAsStringAsync());
+        using var countResponse = await storageClient.GetAsync("/api/files/upload-count");
+        var uploadCount = JsonSerializer.Deserialize<int>(await countResponse.Content.ReadAsStringAsync());
 
         Assert.NotNull(firstProject);
         Assert.NotNull(secondProject);
         Assert.Equivalent(firstProject, secondProject);
-        Assert.NotNull(fileList);
-        Assert.Single(fileList);
-        Assert.Equal($"project_{id}.json", fileList[0]);
+        Assert.Equal(1, uploadCount);
     }
 
     /// <summary>

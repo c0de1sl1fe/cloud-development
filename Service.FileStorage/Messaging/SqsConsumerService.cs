@@ -59,7 +59,6 @@ public class SqsConsumerService(IAmazonSQS sqsClient,
                     catch (Exception ex)
                     {
                         logger.LogError(ex, "Ошибка при обработке сообщения {messageId}", message.MessageId);
-                        continue;
                     }
                 }
                 logger.LogInformation("Пачка из {count} сообщений обработана", response.Messages.Count);

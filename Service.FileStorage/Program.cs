@@ -15,6 +15,7 @@ builder.Services.AddAwsService<IAmazonSQS>();
 builder.Services.AddHostedService<SqsConsumerService>();
 
 builder.AddMinioClient("projectapp-minio");
+builder.Services.AddSingleton<UploadTracker>();
 builder.Services.AddScoped<IFileStorageService, MinioFileStorageService>();
 
 var app = builder.Build();

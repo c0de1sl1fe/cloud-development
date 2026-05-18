@@ -5,7 +5,7 @@ namespace ProjectApp.Api.Messaging;
 /// <summary>
 /// Служба для отправки сгенерированных проектов в брокер сообщений.
 /// </summary>
-public interface IProjectPublisherService
+public interface IProjectProducerService
 {
     /// <summary>
     /// Отправляет проект в брокер сообщений.

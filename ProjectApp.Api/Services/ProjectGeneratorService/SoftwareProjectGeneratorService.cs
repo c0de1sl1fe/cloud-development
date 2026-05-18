@@ -11,7 +11,7 @@ namespace ProjectApp.Api.Services.ProjectGeneratorService;
 public class SoftwareProjectGeneratorService(
     IDistributedCache cache,
     ProjectGenerator generator,
-    IProjectPublisherService producer,
+    IProjectProducerService producer,
     IConfiguration configuration,
     ILogger<SoftwareProjectGeneratorService> logger) : ISoftwareProjectGeneratorService
 {

@@ -9,11 +9,20 @@ namespace Service.FileStorage.Controllers;
 /// Контроллер для взаимодействия с объектным хранилищем.
 /// </summary>
 /// <param name="storageService">Служба для работы с хранилищем</param>
+/// <param name="uploadTracker">Счётчик загрузок</param>
 /// <param name="logger">Логгер</param>
 [ApiController]
 [Route("api/files")]
-public class FileStorageController(IFileStorageService storageService, ILogger<FileStorageController> logger) : ControllerBase
+public class FileStorageController(IFileStorageService storageService, UploadTracker uploadTracker, ILogger<FileStorageController> logger) : ControllerBase
 {
+    /// <summary>
+    /// Возвращает количество успешных загрузок файлов с момента старта сервиса.
+    /// </summary>
+    /// <returns>Количество загрузок</returns>
+    [HttpGet("upload-count")]
+    [ProducesResponseType(200)]
+    public ActionResult<int> GetUploadCount() => Ok(uploadTracker.Count);
+
     /// <summary>
     /// Получает список хранящихся в бакете файлов.
     /// </summary>

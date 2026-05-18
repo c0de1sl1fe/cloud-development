@@ -6,11 +6,11 @@ var builder = DistributedApplication.CreateBuilder(args);
 var redis = builder.AddRedis("cache")
     .WithRedisCommander();
 
-var ports = new[] { 7173, 7174 };
+var ports = new[] { 7173, 7174, 7175 };
 var disableClient =
     builder.Configuration.GetValue("DisableClient", false)
     || builder.Configuration.GetValue("DisableFrontend", false);
-var apiCount = 2;
+var apiCount = 3;
 
 var gateway = builder.AddProject<Projects.ProjectApp_ApiGateway>("projectapp-apigateway");
 

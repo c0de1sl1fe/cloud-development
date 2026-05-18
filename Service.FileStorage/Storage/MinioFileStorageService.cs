@@ -12,7 +12,8 @@ namespace Service.FileStorage.Storage;
 /// <param name="client">MinIO клиент</param>
 /// <param name="configuration">Конфигурация</param>
 /// <param name="logger">Логгер</param>
-public class MinioFileStorageService(IMinioClient client, IConfiguration configuration, ILogger<MinioFileStorageService> logger) : IFileStorageService
+/// <param name="uploadTracker">Счётчик загрузок</param>
+public class MinioFileStorageService(IMinioClient client, IConfiguration configuration, ILogger<MinioFileStorageService> logger, UploadTracker uploadTracker) : IFileStorageService
 {
     private readonly string _bucketName = configuration["AWS:Resources:MinioBucketName"]
         ?? throw new KeyNotFoundException("Minio bucket name was not found in configuration");
@@ -62,6 +63,7 @@ public class MinioFileStorageService(IMinioClient client, IConfiguration configu
             return false;
         }
         logger.LogInformation("Проект {file} успешно загружен в бакет {bucket}", id, _bucketName);
+        uploadTracker.Increment();
         return true;
     }
 
